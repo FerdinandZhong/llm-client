@@ -13,7 +13,7 @@ with open(path.join(here, "requirements.txt"), encoding="utf-8") as f:
 setup(
     name="llm-client",
     version="0.0.1",
-    description="Client for TGI",
+    description="Client for LLM",
     long_description=readme,
     long_description_content_type="text/markdown",
     author="Zhong Qishuai",
