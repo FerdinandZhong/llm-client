@@ -1,12 +1,13 @@
 prompt_format:
   system: "<s>[INST] <<SYS>>\n{instruction}\n<</SYS>>\n\n"
-  default_system_message: "You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe. Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature.\n\nIf a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don't know the answer to a question, please don't share false information."
+  default_system_message: "You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe."
   user: "Question: {instruction} [/INST]"
-  trailing_assistant: "\n"
+  trailing_assistant: "\nAnswer:"
 tgi_server_config:
   model_name: /root/autodl-tmp/model_assets/Llama-2-13b-hf
   num_shards: 4
   max_batch_total_tokens: 4096
   max_batch_prefill_tokens: 2048
-parameters:
-  max_new_tokens: 512
+gen_parameters:
+  max_new_tokens: 256
+  stop: ["</s>", "[/INST]", "[/SYS>>", "Question"]

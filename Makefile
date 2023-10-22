@@ -1,7 +1,7 @@
-PY_SOURCE_FILES=tgi_client/  #this can be modified to include more files
+PY_SOURCE_FILES=llm_client/  #this can be modified to include more files
 
 install: package
-	pip install -e .[dev,data_process,training]
+	pip install -e .[dev]
 
 test:
 	pytest tests -vv -s

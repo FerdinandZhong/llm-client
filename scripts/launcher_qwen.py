@@ -1,6 +1,6 @@
-from tgi_client.handler import start_server
-from tgi_client.utils import read_yaml
-from tgi_client.schemas import TGIServerConfig
+from llm_client.handler import start_server
+from llm_client.utils import read_yaml
+from llm_client.schemas import TGIServerConfig
 import os
 import signal
 
