@@ -24,9 +24,7 @@ def start_server(
         tgi_server_command += (
             f"--quantize {server_config.quantize}" if server_config.quantize else ""
         )
-        tgi_server_command += (
-            f"2>&1 | tee -a {tgi_server_log_file}"
-        )
+        tgi_server_command += f"2>&1 | tee -a {tgi_server_log_file}"
         tgi_bash_command = (
             f"! /bin/bash -c 'source activate {tgi_server_env}; {tgi_server_command}'"
         )
