@@ -5,6 +5,8 @@ prompt_format:
   trailing_assistant: "\n"
 tgi_server_config:
   model_name: /root/autodl-tmp/model_assets/Llama-2-13b-hf
-  num_shards: 2
+  num_shards: 4
+  max_batch_total_tokens: 4096
+  max_batch_prefill_tokens: 2048
 parameters:
   max_new_tokens: 512

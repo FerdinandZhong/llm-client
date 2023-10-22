@@ -1,4 +1,4 @@
-from tgi_client.pipeline import Pipeline
+from llm_client.pipeline import Pipeline
 from typing import List
 import asyncio
 
@@ -8,7 +8,7 @@ async def main(input_list: List, pipeline: Pipeline):
     print(results)
 
 if __name__ == "__main__":
-    config_yaml = "/root/tgi_client/config_yamls/llama2-hf.yaml"
+    config_yaml = "/root/llm_client/config_yamls/llama2-hf.yaml"
 
     pipeline = Pipeline(config_yaml)
 
