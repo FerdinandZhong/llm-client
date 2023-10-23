@@ -1,13 +1,13 @@
 prompt_format:
-  system: "<s>[INST] <<SYS>>\n{instruction}\n<</SYS>>\n\n"
+  system: "<s><<SYS>> {instruction} <</SYS>>\n"
   default_system_message: "You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe."
-  user: "Question: {instruction} [/INST]"
+  user: "{instruction}"
   trailing_assistant: "\nAnswer:"
 tgi_server_config:
   model_name: /root/autodl-tmp/model_assets/Llama-2-13b-hf
-  num_shards: 4
-  max_batch_total_tokens: 4096
-  max_batch_prefill_tokens: 2048
+  num_shards: 2
+  max_batch_total_tokens: 8192
+  max_batch_prefill_tokens: 4096
 gen_parameters:
   max_new_tokens: 256
   stop: ["</s>", "[/INST]", "[/SYS>>", "Question"]
