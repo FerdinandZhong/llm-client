@@ -1,7 +1,6 @@
-from typing import Literal
+from typing import List, Literal, Optional, Union
 
 from pydantic import BaseModel, validator
-from text_generation.types import Parameters
 
 
 class Message(BaseModel):
@@ -20,6 +19,7 @@ class PromptFormat(BaseModel):
     default_system_message: str = ""
 
     @validator("system")
+    @classmethod
     def check_system(cls, value):
         assert value and (
             "{instruction}" in value
@@ -27,6 +27,7 @@ class PromptFormat(BaseModel):
         return value
 
     @validator("user")
+    @classmethod
     def check_user(cls, value):
         assert value and (
             "{instruction}" in value
@@ -49,11 +50,14 @@ class PromptFormat(BaseModel):
         return "".join(prompt)
 
 
-class TGIServerConfig(BaseModel):
+class ServerConfig(BaseModel):
     model_name: str
-    num_shards: int = 1
     port: int = 3000
     master_addr: str = "localhost"
+
+
+class TGIServerConfig(ServerConfig):
+    num_shards: int = 1
     max_batch_total_tokens: int = 8192
     max_batch_prefill_tokens: int = 4096
     max_input_length: int = 1024
@@ -62,7 +66,33 @@ class TGIServerConfig(BaseModel):
     shard_uds_path: str = "/tmp/text-generation-server"
 
 
+class VllmServerConfig(ServerConfig):
+    trust_remote_code: bool = True
+    dtype: str = "auto"
+    max_model_len: int  # input + output
+    tensor_parallel_size: int = 1
+    block_size: int = 16
+    swap_space: int = 4
+    gpu_memory_utilization: float = 0.9
+    max_num_seqs: int = 256
+    max_paddings: int = 256
+    quantization: Optional[str] = None
+
+
+class VllmSamplingParams(BaseModel):
+    n: int = (1,)
+    temperature: float = (1.0,)
+    top_p: float = (1.0,)
+    top_k: int = (-1,)
+    min_p: float = (0.0,)
+    use_beam_search: bool = (False,)
+    length_penalty: float = (1.0,)
+    stop: Optional[Union[str, List[str]]] = (None,)
+    stop_token_ids: Optional[List[int]] = (None,)
+    max_tokens: int = (16,)
+
+
 class PipelineConfig(BaseModel):
     prompt_format: PromptFormat
-    tgi_server_config: TGIServerConfig
-    gen_parameters: Parameters = Parameters()
+    server_config: ServerConfig
+    gen_parameters: dict

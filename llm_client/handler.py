@@ -1,12 +1,12 @@
 import logging
 import subprocess
 
-from .schemas import TGIServerConfig
+from .schemas import TGIServerConfig, VllmServerConfig
 
 logger = logging.getLogger(__name__)
 
 
-def start_server(
+def start_tgi_server(
     server_config: TGIServerConfig,
     tgi_server_log_file: str = "/root/autodl-tmp/logs",
     tgi_server_env: str = "llm-tgi-env",
@@ -34,3 +34,31 @@ def start_server(
         return proc
     except Exception as ex:
         logger.error(str(ex))
+
+
+def start_vllm_server(
+    server_config: VllmServerConfig,
+    vllm_server_log_file: str = "/root/autodl-tmp/logs",
+):
+    try:
+        logger.info("server full config: %s", server_config.dict())
+        vllm_server_command = (
+            "python -m vllm.entrypoints.api_server "
+            f"--model {server_config.model_name} --tensor-parallel-size {server_config.tensor_parallel_size} "
+            f"--dtype {server_config.dtype} --max-model-len {server_config.max_model_len} "
+            f"--block-size {server_config.block_size} --gpu-memory-utilization {server_config.gpu_memory_utilization} "
+            f"--max-num-seqs {server_config.max_num_seqs} --max-paddings {server_config.max_paddings} "   
+        )
+        vllm_server_command += (
+            f"--quantization {server_config.quantization} " if server_config.quantization else ""
+        )
+
+        vllm_server_command += (
+            "--trust-remote-code" if server_config.trust_remote_code else ""
+        )
+        vllm_server_command += f"2>&1 | tee -a {vllm_server_log_file}"
+        proc = subprocess.Popen(vllm_server_command, shell=True)
+        return proc
+    except Exception as ex:
+        logger.error(str(ex))
+
