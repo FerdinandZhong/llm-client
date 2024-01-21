@@ -6,7 +6,8 @@ import pandas as pd
 from tqdm import tqdm
 
 from ..pipeline import Pipeline
-
+import re
+import json
 
 def generate_question_prompts(question_df):
     """
@@ -26,7 +27,7 @@ def generate_question_prompts(question_df):
     for row in question_df.itertuples(False):
         row = row._asdict()
         if row["prompt"] is not None:
-            prompt = row["prompt"]
+            prompt = str(row["prompt"])
             option_list = []
             for i in range(5):
                 option_list.append(row[f"option_{i+1}"])
@@ -46,7 +47,7 @@ async def get_experiment_result(
     use_random_options: bool = False,
     additional_prompt: str = "",
 ):
-    for seed in (seed_pbar := tqdm(range(10))):
+    for seed in (seed_pbar := tqdm(range(1,10))):
         seed_pbar.set_description(f"seed: {seed}")
         current_df = experiment_context.copy()
 
@@ -79,7 +80,7 @@ async def get_experiment_result(
                     nation=nation,
                     city=city,
                 )
-                full_prompt.append(full_prompt)
+                chunk_list.append(full_prompt)
                 chunk_index_list.append(question_index)
 
                 if len(chunk_list) >= chunk_size or question_index == full_list_len - 1:
@@ -103,3 +104,40 @@ async def get_experiment_result(
                     continue
 
         current_df.to_csv(output_path.format(seed=seed))
+
+
+def retrieve_score(all_seeds_result_dfs, *context_cols):
+    score_df_list = []
+
+    pattern = (
+        r"(?<answer_number\": )\d|(?<answer\\_number\": )\d|(?<answer_number\": \")\d"
+        r"(?<answer_number\":)\d|(?<answer\\_number\":)\d|(?<answer_number\":\")\d"
+        r"(?<answer\": )\d|(?<answer\": \")\d|(?<answer\":)\d|(?<answer\":\")\d"
+    )
+
+    for seed_result_df in all_seeds_result_dfs:
+        seed_score_df = pd.DataFrame(columns = context_cols)
+        for index, row in seed_result_df.iterrows():
+            seed_score_df.loc[index, context_cols] = [row[context_col] for context_col in context_cols]
+            for question_index in range(1, 25):
+                question_col = f"m_{question_index}"
+                try:
+                    json_result = josn.loads(row[question_col].lstrip().rstrip())
+                    seed_score_df.loc[index, question_col] = float(json_result["answer_number"])
+                except KeyError:
+                    seed_score_df.loc[index, question_col] = float(json_result["answer"])
+                except KeyError:
+                    seed_score_df.loc[index, question_col] = float(json_result[list(json_result.keys())[0]])
+                except Exception as e:
+                    result = re.search(pattern, row[question_col])
+                    if result:
+                        seed_score_df.loc[index, question_col] = float(result.group())
+                    else:
+                        print(f"No match found. {row[question_col]}")
+                        seed_score_df.loc[index, question_col] = 3
+        
+        score_df_list.append(seed_score_df)
+
+    print(score_df_list[0].head())
+    return score_df_list
+        

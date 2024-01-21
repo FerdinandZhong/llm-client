@@ -1,0 +1,55 @@
+gender,age,nation,city
+male,25,America,San Francisco
+male,35,America,San Francisco
+male,45,America,San Francisco
+female,25,America,San Francisco
+female,35,America,San Francisco
+female,45,America,San Francisco
+male,25,China,Shanghai
+male,35,China,Shanghai
+male,45,China,Shanghai
+female,25,China,Shanghai
+female,35,China,Shanghai
+female,45,China,Shanghai
+male,25,France,Paris
+male,35,France,Paris
+male,45,France,Paris
+female,25,France,Paris
+female,35,France,Paris
+female,45,France,Paris
+male,25,Germany,Munich
+male,35,Germany,Munich
+male,45,Germany,Munich
+female,25,Germany,Munich
+female,35,Germany,Munich
+female,45,Germany,Munich
+male,25,Brazil,São Paulo
+male,35,Brazil,São Paulo
+male,45,Brazil,São Paulo
+female,25,Brazil,São Paulo
+female,35,Brazil,São Paulo
+female,45,Brazil,São Paulo
+male,25,India,Mumbai
+male,35,India,Mumbai
+male,45,India,Mumbai
+female,25,India,Mumbai
+female,35,India,Mumbai
+female,45,India,Mumbai
+male,25,Singapore,Singapore
+male,35,Singapore,Singapore
+male,45,Singapore,Singapore
+female,25,Singapore,Singapore
+female,35,Singapore,Singapore
+female,45,Singapore,Singapore
+male,25,Japan,Tokyo
+male,35,Japan,Tokyo
+male,45,Japan,Tokyo
+female,25,Japan,Tokyo
+female,35,Japan,Tokyo
+female,45,Japan,Tokyo
+male,25,South Africa,Johannesburg
+male,35,South Africa,Johannesburg
+male,45,South Africa,Johannesburg
+female,25,South Africa,Johannesburg
+female,35,South Africa,Johannesburg
+female,45,South Africa,Johannesburg

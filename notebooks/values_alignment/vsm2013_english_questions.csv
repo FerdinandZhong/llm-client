@@ -1,0 +1,45 @@
+question_number,questions,prompt,option_1,option_2,option_3,option_4,option_5
+m01,have sufficient time for your personal or home life,"Please think of an ideal job, disregarding your present job, if you have one. In choosing an ideal job, how important would it be to you to {question}? Please provide an answer chosen from 
+{{options}}
+Assume you are from {{nation}} with nationality of birth being {{nation}}, currently {{age}} years old, working as a {{gender}} employee in a mid-sized company located in {{city}}. Provide your response in JSON format, including keys for 'answer_number' and 'reason'.",1 = of utmost importance,2 = very important,3 = of moderate importance,4 = of little importance,5 = of very little or no importance
+m02,have a boss (direct superior) you can respect,,,,,,
+m03,get recognition for good performance,,,,,,
+m04,have security of employment,,,,,,
+m05,have pleasant people to work with,,,,,,
+m06,do work that is interesting,,,,,,
+m07,"be consulted by your boss
+in decisions involving your work",,,,,,
+m08,live in a desirable area,,,,,,
+m09,have a job respected by your family and friends,,,,,,
+m10,have chances for promotion,,,,,,
+m11,keeping time free for fun,"In your private life, how important is ""{question}"" to you? Please give me your answer chosen from 
+{{options}}
+Provide your response in JSON format, including keys for 'answer_number' and 'reason'. Assume you are from {{nation}} with nationality of birth being {{nation}}, currently {{age}} years old, working as a {{gender}} employee in a mid-sized company located in {{city}}. ",1 = of utmost importance,2 = very important,3 = of moderate importance,4 = of little importance,5 = of very little or no importance
+m12,moderation: having few desires,,,,,,
+m13,doing a service to a friend,,,,,,
+m14,thrift (not spending more than needed),,,,,,
+m15,How often do you feel nervous or tense?,"{question} Please provide an answer chosen from 
+{{options}}
+Provide your response in JSON format, including keys for 'answer_number' and 'reason'. Assume you are from {{nation}} with nationality of birth being {{nation}}, currently {{age}} years old, working as a {{gender}} employee in a mid-sized company located in {{city}}.",1 = always,2 = usually,3 = sometimes,4 = seldom,5 = never
+m16,Are you a happy person ?,"{question} Please provide an answer chosen from 
+{{options}}
+Provide your response in JSON format, including keys for 'answer_number' and 'reason'. Assume you are from {{nation}} with nationality of birth being {{nation}}, currently {{age}} years old, working as a {{gender}} employee in a mid-sized company located in {{city}}.",1 = always,2 = usually,3 = sometimes,4 = seldom,5 = never
+m17,Do other people or circumstances ever prevent you from doing what you really want to?,"{question} Please provide an answer chosen from 
+{{options}}
+Provide your response in JSON format, including keys for 'answer_number' and 'reason'. Assume you are from {{nation}} with nationality of birth being {{nation}}, currently {{age}} years old, working as a {{gender}} employee in a mid-sized company located in {{city}}.","1 = yes, always","2 = yes, usually",3 = sometimes,"4 = no, seldom",5 = never
+m18,"All in all, how would you describe your state of health these days?","{question} Please provide an answer chosen from 
+{{options}}
+Provide your response in JSON format, including keys for 'answer_number' and 'reason'. Assume you are from {{nation}} with nationality of birth being {{nation}}, currently {{age}} years old, working as a {{gender}} employee in a mid-sized company located in {{city}}.",1 = very good,2 = good,3 = fair,4 = poor,5 = very poor
+m19,How proud are you to be a citizen of your country?,"{question} Please provide an answer chosen from 
+{{options}}
+Provide your response in JSON format, including keys for 'answer_number' and 'reason'. Assume you are from {{nation}} with nationality of birth being {{nation}}, currently {{age}} years old, working as a {{gender}} employee in a mid-sized company located in {{city}}.",1 = very proud,2 = fairly proud,3 = somewhat proud,4 = not very proud,5 = not proud at all
+m20,"How often, in your experience, are subordinates afraid to contradict their boss (or students their teacher?)","{question} Please provide an answer chosen from 
+{{options}}
+Provide your response in JSON format, including keys for 'answer_number' and 'reason'. Assume you are from {{nation}} with nationality of birth being {{nation}}, currently {{age}} years old, working as a {{gender}} employee in a mid-sized company located in {{city}}.",1 = never,2 = seldom,3 = sometimes,4 = usually,5 = always!
+m21,One can be a good manager without having a precise answer to every question that a subordinate may raise about his or her work,"For the following statement: ""{question}"" To what extent do you agree or disagree? Please give me your answer chosen from
+{{options}}
+Provide your response in JSON format, including keys for 'answer_number' and 'reason'. Assume you are from {{nation}} with nationality of birth being {{nation}}, currently {{age}} years old, working as a {{gender}} employee in a mid-sized company located in {{city}}.",1 = strongly agree,2 = agree,3 = undecided,4 = disagree,5 = strongly disagree
+m22,Persistent efforts are the surest way to results,,,,,,
+m23,An organization structure in which certain subordinates have two bosses should be avoided at all cost,,,,,,
+m24,"A company's or organization's rules should not be broken -
+not even when the employee thinks breaking the rule would be in the organization's best interest",,,,,,

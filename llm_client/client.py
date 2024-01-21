@@ -2,8 +2,11 @@ from typing import Dict, Optional
 
 from aiohttp import ClientSession, ClientTimeout
 from text_generation.errors import parse_error
-from text_generation.types import Response
+from pydantic import BaseModel
 
+
+class Response(BaseModel):
+    generated_text: str 
 
 class VllmAsyncClient:
     def __init__(
@@ -51,4 +54,6 @@ class VllmAsyncClient:
 
                 if resp.status != 200:
                     raise parse_error(resp.status, payload)
-                return Response(generated_text=payload["text"], details=None)
+                full_text = payload["text"][0]
+                generated_text = full_text.replace(prompt, "").lstrip()
+                return Response(generated_text=generated_text)

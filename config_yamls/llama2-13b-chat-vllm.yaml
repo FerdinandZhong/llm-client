@@ -4,7 +4,7 @@ prompt_format:
   user: "{instruction} [/INST]"
   trailing_assistant: ""
 server_config:
-  model_name: /root/model_assets/Llama-2-7b-chat-hf
+  model_name: /root/model_assets/Llama-2-13b-chat-hf
   tensor_parallel_size: 2
   max_model_len: 4096
   master_addr: 0.0.0.0

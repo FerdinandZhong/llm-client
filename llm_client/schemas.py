@@ -77,6 +77,7 @@ class VllmServerConfig(ServerConfig):
     max_num_seqs: int = 256
     max_paddings: int = 256
     quantization: Optional[str] = None
+    max_num_batched_tokens: int = 8192
 
 
 class VllmSamplingParams(BaseModel):
