@@ -1,12 +1,13 @@
 from typing import Dict, Optional
 
 from aiohttp import ClientSession, ClientTimeout
-from text_generation.errors import parse_error
 from pydantic import BaseModel
+from text_generation.errors import parse_error
 
 
 class Response(BaseModel):
-    generated_text: str 
+    generated_text: str
+
 
 class VllmAsyncClient:
     def __init__(

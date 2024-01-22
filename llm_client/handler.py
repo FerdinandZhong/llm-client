@@ -47,11 +47,13 @@ def start_vllm_server(
             f"--model {server_config.model_name} --tensor-parallel-size {server_config.tensor_parallel_size} "
             f"--dtype {server_config.dtype} --max-model-len {server_config.max_model_len} "
             f"--block-size {server_config.block_size} --gpu-memory-utilization {server_config.gpu_memory_utilization} "
-            f"--max-num-seqs {server_config.max_num_seqs} --max-paddings {server_config.max_paddings} " 
-            f"--max-num-batched-tokens {server_config.max_num_batched_tokens} "  
+            f"--max-num-seqs {server_config.max_num_seqs} --max-paddings {server_config.max_paddings} "
+            f"--max-num-batched-tokens {server_config.max_num_batched_tokens} "
         )
         vllm_server_command += (
-            f"--quantization {server_config.quantization} " if server_config.quantization else ""
+            f"--quantization {server_config.quantization} "
+            if server_config.quantization
+            else ""
         )
 
         vllm_server_command += (
@@ -62,4 +64,3 @@ def start_vllm_server(
         return proc
     except Exception as ex:
         logger.error(str(ex))
-
