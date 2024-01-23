@@ -1,0 +1,16 @@
+prompt_format:
+  system: "<|im_start|>system\n{instruction}<|im_end|>\n"
+  default_system_message: "You are a helpful, respectful and honest assistant."
+  user: "<|im_start|>user\n{instruction}<|im_end|>\n"
+  trailing_assistant: "<|im_start|>assistant\n"
+server_config:
+  model_name: /root/model_assets/Qwen-72B-Chat
+  tensor_parallel_size: 4
+  max_model_len: 2048
+  master_addr: 0.0.0.0
+  port: 8000
+  gpu_memory_utilization: 0.95
+  max_num_batched_tokens: 32768
+gen_parameters:
+  max_tokens: 512
+  stop: ["<|im_end|>"]

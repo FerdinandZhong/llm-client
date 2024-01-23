@@ -1,0 +1,78 @@
+,gender,age,nation,city,m_1,m_2,m_3,m_4,m_5,m_6,m_7,m_8,m_9
+0,male,25,America,San Francisco,,,,,,,,,
+1,male,35,America,San Francisco,,,,,,,,,
+2,male,45,America,San Francisco,,,,,,,,,
+3,female,25,America,San Francisco,,,,,,,,,
+4,female,35,America,San Francisco,,,,,,,,,
+5,female,45,America,San Francisco,,,,,,,,,
+6,male,25,China,Shanghai,,,,,,,,,
+7,male,35,China,Shanghai,,,,,,,,,
+8,male,45,China,Shanghai,,,,,,,,,
+9,female,25,China,Shanghai,,,,,,,,,
+10,female,35,China,Shanghai,,,,,,,,,
+11,female,45,China,Shanghai,,,,,,,,,
+12,male,25,France,Paris,,,,,,,,,
+13,male,35,France,Paris,,,,,,,,,
+14,male,45,France,Paris,,,,,,,,,
+15,female,25,France,Paris,,,,,,,,,
+16,female,35,France,Paris,,,,,,,,,
+17,female,45,France,Paris,,,,,,,,,
+18,male,25,Germany,Munich,,,,,,,,,
+19,male,35,Germany,Munich,,,,,,,,,
+20,male,45,Germany,Munich,,,,,,,,,
+21,female,25,Germany,Munich,,,,,,,,,
+22,female,35,Germany,Munich,,,,,,,,,
+23,female,45,Germany,Munich,,,,,,,,,
+24,male,25,Brazil,São Paulo,,,,,,,,,
+25,male,35,Brazil,São Paulo,,,,,,,,,
+26,male,45,Brazil,São Paulo,,,,,,,,,
+27,female,25,Brazil,São Paulo,,,,,,,,,
+28,female,35,Brazil,São Paulo,,,,,,,,,
+29,female,45,Brazil,São Paulo,,,,,,,,,
+30,male,25,India,Mumbai,,,,,,,,,
+31,male,35,India,Mumbai,,,,,,,,,
+32,male,45,India,Mumbai,,,,,,,,,
+33,female,25,India,Mumbai,,,,,,,,,
+34,female,35,India,Mumbai,,,,,,,,,
+35,female,45,India,Mumbai,,,,,,,,,
+36,male,25,Singapore,Singapore,,,,,,,,,
+37,male,35,Singapore,Singapore,,,,,,,,,
+38,male,45,Singapore,Singapore,,,,,,,,,
+39,female,25,Singapore,Singapore,,,,,,,,,
+40,female,35,Singapore,Singapore,,,,,,,,,
+41,female,45,Singapore,Singapore,,,,,,,,,
+42,male,25,Japan,Tokyo,,,,,,,,,
+43,male,35,Japan,Tokyo,,,,,,,,,
+44,male,45,Japan,Tokyo,,,,,,,,,
+45,female,25,Japan,Tokyo,,,,,,,,,
+46,female,35,Japan,Tokyo,,,,,,,,,
+47,female,45,Japan,Tokyo,,,,,,,,,
+48,male,25,South Africa,Johannesburg,,,,,,,,,
+49,male,35,South Africa,Johannesburg,,,,,,,,,
+50,male,45,South Africa,Johannesburg,,,,,,,,,
+51,female,25,South Africa,Johannesburg,,,,,,,,,
+52,female,35,South Africa,Johannesburg,,,,,,,,,
+53,female,45,South Africa,Johannesburg,"{
+""answer_number"": 2,
+""reason"": ""As a 45-year-old female employee in a mid-sized company located in Johannesburg, I believe that having sufficient time for my personal or home life is very important. Work-life balance is essential for my overall well-being, and I would want to have enough time to spend with my family and friends, pursue hobbies, and take care of personal errands without feeling overwhelmed or stressed. A job that allows me to maintain a healthy balance between work and personal life would be ideal for me.""
+}","According to the provided details, this is my response:
+
+{
+""answer_number"": 2,
+""reason"": 
+""During our leisure time, we have the freedom to do anything we want. So, keeping time free for fun is important to me because it allows us to do something that we enjoy and brings us happiness, as well as relax and recharge. Relaxation is necessary for a happy and healthy life. It helps us refocus and energize, lower stress levels, and develop a better perspective. Therefore, I would rate keeping time free for fun as very important.""
+}","{""answer_number"": 4, ""reason"": ""I usually feel calm and relaxed, but sometimes I get nervous when dealing with tight deadlines or unexpected challenges at work.""}","{""answer_number"": 2, ""reason"": ""I have a stable job, supportive family and friends, and relatively good personal health, but sometimes experience stress and anxiety due to work and personal responsibilities.""}
+
+I am a 45-year-old female employee born and raised in South Africa, currently working in a mid-sized company located in Johannesburg. While I have many reasons to be grateful and content, I cannot say that I am always happy. There are times when work-related stress and personal responsibilities weigh heavily on my mind, affecting my overall well-being and happiness. However, I do my best to maintain a positive attitude and outlook, and try to focus on the good things in my life.","{""answer_number"": 4, ""reason"": ""While I do face some challenges and obstacles in my life, I generally have the freedom and autonomy to make my own choices and pursue my goals. However, as a working mother, I do have to balance my professional and personal responsibilities, which can sometimes be difficult. additionally, as a woman in a mid-sized company in South Africa, I may face certain gender-related challenges and biases that can affect my ability to achieve my goals. Nevertheless, I try to stay focused and motivated, and I believe that with hard work and determination, I can overcome any obstacles and achieve what I want.""}","{
+""answer_number"": 3,
+""reason"": ""I have been experiencing some stress and anxiety related to my job and personal life, but I am managing it with the help of therapy and self-care. I also have a family history of hypertension, but I have been taking steps to maintain a healthy lifestyle, including regular exercise and a balanced diet. Overall, I would say my state of health is fair, but I am working to improve it.""
+}","{
+""answer_number"": 3,
+""reason"": ""I am proud of South Africa's diverse culture and history, but I also recognize the challenges we face in terms of inequality and economic growth. As a 45-year-old female employee in a mid-sized company in Johannesburg, I feel that I have a role to play in contributing to the country's development and growth.""
+}","{
+""answer_number"": 3,
+""reason"": ""In my experience, subordinates are sometimes afraid to contradict their boss or students their teacher. This fear can stem from a desire to avoid conflict, fear of retribution or negative consequences, or a lack of confidence in their own opinions and ideas. As a South African woman working in a mid-sized company in Johannesburg, I have witnessed this phenomenon firsthand and believe that it is important for leaders to create an environment where dissenting voices are encouraged and respected.""
+}","{
+""answer_number"": 4,
+""reason"": ""While it's possible for a manager to be effective without having all the answers, it's important for them to have a solid understanding of their team's work and be able to provide guidance and support when needed. A good manager should be able to admit when they don't know something and be willing to learn and seek out answers, rather than simply dismissing their subordinate's questions or concerns.""
+}"

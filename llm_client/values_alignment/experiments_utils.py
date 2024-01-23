@@ -35,9 +35,9 @@ def generate_question_prompts(question_df):
             option_list = []
             for i in range(5):
                 option_list.append(row[f"option_{i+1}"])
-            question_prompts.append(
-                (prompt.format(question=row["questions"]), option_list)
-            )
+        question_prompts.append(
+            (prompt.format(question=row["questions"]), option_list)
+        )
 
     return question_prompts
 
@@ -51,12 +51,15 @@ async def get_experiment_result(
     use_random_options: bool = False,
     additional_prompt: str = "",
 ):
-    for seed in (seed_pbar := tqdm(range(1, 10))):
+    for seed in (seed_pbar := tqdm(range(10))):
         seed_pbar.set_description(f"seed: {seed}")
         current_df = experiment_context.copy()
 
+        chunk_list = []
+        context_index_list = []
+        question_index_list = []
         for context_index, row in (
-            context_pbar := tqdm(current_df.iterrows(), total=current_df.shape[0])
+            context_pbar := tqdm(list(current_df.iterrows()), total=current_df.shape[0])
         ):
             context_pbar.set_description(f"context: {context_index}")
             gender = row["gender"]
@@ -64,9 +67,7 @@ async def get_experiment_result(
             nation = row["nation"]
             city = row["city"]
 
-            chunk_list = []
-            chunk_index_list = []
-            full_list_len = len(question_prompts)
+            # full_list_len = len(question_prompts)
 
             for question_index, (question_prompt, option_list) in enumerate(
                 question_prompts
@@ -85,9 +86,10 @@ async def get_experiment_result(
                     city=city,
                 )
                 chunk_list.append(full_prompt)
-                chunk_index_list.append(question_index)
+                context_index_list.append(context_index)
+                question_index_list.append(question_index)
 
-                if len(chunk_list) >= chunk_size or question_index == full_list_len - 1:
+                if len(chunk_list) >= chunk_size:
                     response_list = await asyncio.gather(
                         *[
                             pipeline.model_predict(full_prompt)
@@ -95,17 +97,33 @@ async def get_experiment_result(
                         ]
                     )
 
-                    for question_response, chunk_index in zip(
-                        response_list, chunk_index_list
+                    for question_response, response_context_index, chunk_index in zip(
+                        response_list, context_index_list, question_index_list
                     ):
-                        current_df.loc[context_index, f"m_{chunk_index + 1}"] = (
+                        current_df.loc[response_context_index, f"m_{chunk_index + 1}"] = (
                             question_response
                         )
 
                     chunk_list = []
-                    chunk_index_list = []
+                    context_index_list = []
+                    question_index_list = []
                 else:
                     continue
+            
+        if len(chunk_list) > 0:
+            response_list = await asyncio.gather(
+                *[
+                    pipeline.model_predict(full_prompt)
+                    for full_prompt in chunk_list
+                ]
+            )
+
+            for question_response, chunk_index in zip(
+                response_list, question_index_list
+            ):
+                current_df.loc[context_index, f"m_{chunk_index + 1}"] = (
+                    question_response
+                )
 
         current_df.to_csv(output_path.format(seed=seed))
 

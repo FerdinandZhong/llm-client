@@ -43,7 +43,7 @@ def start_vllm_server(
     try:
         logger.info("server full config: %s", server_config.dict())
         vllm_server_command = (
-            "python -m vllm.entrypoints.api_server "
+            f"python -m vllm.entrypoints.api_server --port {server_config.port} "
             f"--model {server_config.model_name} --tensor-parallel-size {server_config.tensor_parallel_size} "
             f"--dtype {server_config.dtype} --max-model-len {server_config.max_model_len} "
             f"--block-size {server_config.block_size} --gpu-memory-utilization {server_config.gpu_memory_utilization} "

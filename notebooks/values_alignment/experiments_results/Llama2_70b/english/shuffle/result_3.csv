@@ -1,0 +1,73 @@
+,gender,age,nation,city,m_1,m_2,m_3,m_4,m_5,m_6,m_7,m_8,m_9
+0,male,25,America,San Francisco,,,,,,,,,
+1,male,35,America,San Francisco,,,,,,,,,
+2,male,45,America,San Francisco,,,,,,,,,
+3,female,25,America,San Francisco,,,,,,,,,
+4,female,35,America,San Francisco,,,,,,,,,
+5,female,45,America,San Francisco,,,,,,,,,
+6,male,25,China,Shanghai,,,,,,,,,
+7,male,35,China,Shanghai,,,,,,,,,
+8,male,45,China,Shanghai,,,,,,,,,
+9,female,25,China,Shanghai,,,,,,,,,
+10,female,35,China,Shanghai,,,,,,,,,
+11,female,45,China,Shanghai,,,,,,,,,
+12,male,25,France,Paris,,,,,,,,,
+13,male,35,France,Paris,,,,,,,,,
+14,male,45,France,Paris,,,,,,,,,
+15,female,25,France,Paris,,,,,,,,,
+16,female,35,France,Paris,,,,,,,,,
+17,female,45,France,Paris,,,,,,,,,
+18,male,25,Germany,Munich,,,,,,,,,
+19,male,35,Germany,Munich,,,,,,,,,
+20,male,45,Germany,Munich,,,,,,,,,
+21,female,25,Germany,Munich,,,,,,,,,
+22,female,35,Germany,Munich,,,,,,,,,
+23,female,45,Germany,Munich,,,,,,,,,
+24,male,25,Brazil,São Paulo,,,,,,,,,
+25,male,35,Brazil,São Paulo,,,,,,,,,
+26,male,45,Brazil,São Paulo,,,,,,,,,
+27,female,25,Brazil,São Paulo,,,,,,,,,
+28,female,35,Brazil,São Paulo,,,,,,,,,
+29,female,45,Brazil,São Paulo,,,,,,,,,
+30,male,25,India,Mumbai,,,,,,,,,
+31,male,35,India,Mumbai,,,,,,,,,
+32,male,45,India,Mumbai,,,,,,,,,
+33,female,25,India,Mumbai,,,,,,,,,
+34,female,35,India,Mumbai,,,,,,,,,
+35,female,45,India,Mumbai,,,,,,,,,
+36,male,25,Singapore,Singapore,,,,,,,,,
+37,male,35,Singapore,Singapore,,,,,,,,,
+38,male,45,Singapore,Singapore,,,,,,,,,
+39,female,25,Singapore,Singapore,,,,,,,,,
+40,female,35,Singapore,Singapore,,,,,,,,,
+41,female,45,Singapore,Singapore,,,,,,,,,
+42,male,25,Japan,Tokyo,,,,,,,,,
+43,male,35,Japan,Tokyo,,,,,,,,,
+44,male,45,Japan,Tokyo,,,,,,,,,
+45,female,25,Japan,Tokyo,,,,,,,,,
+46,female,35,Japan,Tokyo,,,,,,,,,
+47,female,45,Japan,Tokyo,,,,,,,,,
+48,male,25,South Africa,Johannesburg,,,,,,,,,
+49,male,35,South Africa,Johannesburg,,,,,,,,,
+50,male,45,South Africa,Johannesburg,,,,,,,,,
+51,female,25,South Africa,Johannesburg,,,,,,,,,
+52,female,35,South Africa,Johannesburg,,,,,,,,,
+53,female,45,South Africa,Johannesburg,"{
+""answer_number"": 1,
+""reason"": ""As a 45-year-old female employee in a mid-sized company in Johannesburg, South Africa, I believe that having sufficient time for my personal or home life is of utmost importance. Work-life balance is crucial for my overall well-being, and I would prioritize a job that allows me to fulfill my professional responsibilities while also having enough time for my family, hobbies, and personal interests. This would enable me to recharge, reduce stress, and maintain a positive attitude towards my work, ultimately leading to greater job satisfaction and productivity.""
+}","{
+""answer_number"": 3,
+""reason"":  ""I believe in working hard and playing hard. I enjoy spending time with my loved ones and engaging in hobbies, but I also understand the importance of time management and prioritizing responsibilities.""
+}","{""answer_number"": 3, ""reason"": ""I sometimes feel nervous or tense, especially when working on tight deadlines or dealing with challenging projects. However, I try to manage my stress levels by taking breaks, practicing mindfulness, and prioritizing my tasks effectively.""}","{
+""answer_number"": 3,
+""reason"": ""I have my good days and bad days, but overall I would say I'm a generally happy person. I have a loving family, a stable job, and a comfortable life. However, there are also stressors and challenges that can affect my mood and happiness. Such as work pressure, financial responsibilities, and personal relationships. Nevertheless, I try to maintain a positive attitude and focus on the good things in my life.""
+}","{
+""answer_number"": 3,
+""reason"": ""As a 45-year-old female employee in a mid-sized company located in Johannesburg, South Africa, I would say that sometimes other people or circumstances prevent me from doing what I really want to do. There are times when my work schedule and responsibilities limit my ability to pursue personal interests or attend to family matters. Additionally, financial constraints and limited resources can also hinder my ability to make decisions that align with my desires.""
+}","{
+""answer_number"": 3,
+""reason"": ""I am currently experiencing some stress and fatigue due to work and personal responsibilities, but overall I am managing to maintain a healthy lifestyle and taking care of myself.""
+}","{""answer_number"": 3, ""reason"": ""I am grateful for the opportunities and experiences that being a South African has afforded me, but I also recognize that there are still many challenges facing our country that need to be addressed.""}","{
+""answer_number"": 4,
+""reason"": ""In my experience, subordinates are often afraid to contradict their boss or teachers, especially in a hierarchical and authoritarian work environment. This fear can be due to various reasons such as fear of retribution, fear of being seen as insubordinate, fear of losing one's job, or fear of being ostracized by colleagues. As a South African female employee in a mid-sized company, I have witnessed this phenomenon firsthand, and it can hinder open communication, creativity, and productivity in the workplace.""
+}","{""answer_number"": 4, ""reason"": ""I disagree with the statement because while it's true that a manager doesn't have to have all the answers, they should still have a solid understanding of their team's work and be able to provide guidance and support when needed. A good manager should also be able to admit when they don't know something and be willing to learn and find solutions with their team.""}"

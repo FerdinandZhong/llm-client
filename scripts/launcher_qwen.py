@@ -1,15 +1,26 @@
-from llm_client.handler import start_tgi_server
+from llm_client.handler import start_vllm_server
 from llm_client.utils import read_yaml
-from llm_client.schemas import TGIServerConfig
+from llm_client.schemas import VllmServerConfig
 import os
 import signal
+import argparse
 
 
-#FIXME: use native qwen model loading method
 if __name__ == "__main__":
-    config_yaml = "/root/tgi_client/config_yamls/qwen.yaml"
-    tgi_server_config = TGIServerConfig.parse_obj(read_yaml(config_yaml)["tgi_server_config"])
-    proc = start_tgi_server(tgi_server_config, "/root/autodl-tmp/logs/qwen.txt")
+    parser = argparse.ArgumentParser(description='Qwen model launcher')
+
+    # Add arguments
+    parser.add_argument('--config_yaml_name', type=str, default="qwen-14b-chat-vllm",
+                    help='qwen model config yaml name')
+
+    parser.add_argument('--log_file', type=str, default="qwen-14b")
+
+    # Parse the arguments
+    args = parser.parse_args()
+
+    config_yaml = f"/root/Projects/llm-client/config_yamls/{args.config_yaml_name}.yaml"
+    vllm_server_config = VllmServerConfig.parse_obj(read_yaml(config_yaml)["server_config"])
+    proc = start_vllm_server(vllm_server_config, f"/root/experiments_logs/{args.log_file}.txt")
     try:
         proc.wait()
     except KeyboardInterrupt:

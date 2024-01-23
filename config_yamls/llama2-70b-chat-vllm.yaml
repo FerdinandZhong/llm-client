@@ -1,0 +1,15 @@
+prompt_format:
+  system: "[INST] <<SYS>>{instruction}<</SYS>>"
+  default_system_message: "You are a helpful, respectful and honest assistant."
+  user: "{instruction} [/INST]"
+  trailing_assistant: ""
+server_config:
+  model_name: /root/model_assets/Llama-2-70b-chat-hf
+  tensor_parallel_size: 4
+  max_model_len: 4096
+  master_addr: 0.0.0.0
+  port: 8000
+  max_num_batched_tokens: 32768
+gen_parameters:
+  max_tokens: 512
+  stop: ["</s>"]

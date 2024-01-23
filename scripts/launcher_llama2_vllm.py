@@ -3,11 +3,24 @@ from llm_client.utils import read_yaml
 from llm_client.schemas import VllmServerConfig
 import os
 import signal
+import argparse
+
 
 if __name__ == "__main__":
-    config_yaml = "/root/Projects/llm-client/config_yamls/llama2-13b-chat-vllm.yaml"
+    parser = argparse.ArgumentParser(description='Llama model launcher')
+
+    # Add arguments
+    parser.add_argument('--config_yaml_name', type=str, default="llama2-7b-chat-vllm",
+                    help='llama2 model config yaml name')
+
+    parser.add_argument('--log_file', type=str, default="llama2-7b")
+
+    # Parse the arguments
+    args = parser.parse_args()
+
+    config_yaml = f"/root/Projects/llm-client/config_yamls/{args.config_yaml_name}.yaml"
     vllm_server_config = VllmServerConfig.parse_obj(read_yaml(config_yaml)["server_config"])
-    proc = start_vllm_server(vllm_server_config, "/root/experiments_logs/llama2-13b.txt")
+    proc = start_vllm_server(vllm_server_config, f"/root/experiments_logs/{args.log_file}.txt")
     try:
         proc.wait()
     except KeyboardInterrupt:
