@@ -50,10 +50,14 @@ async def get_experiment_result(
     chunk_size: int = 50,
     use_random_options: bool = False,
     additional_prompt: str = "",
+    only_for_appending: bool = False
 ):
     for seed in (seed_pbar := tqdm(range(10))):
         seed_pbar.set_description(f"seed: {seed}")
-        current_df = experiment_context.copy()
+        if only_for_appending:
+            current_df = pd.read_csv(output_path.format(seed=seed), index_col=0)
+        else:
+            current_df = experiment_context.copy()
 
         chunk_list = []
         context_index_list = []
@@ -90,19 +94,22 @@ async def get_experiment_result(
                 question_index_list.append(question_index)
 
                 if len(chunk_list) >= chunk_size:
-                    response_list = await asyncio.gather(
-                        *[
-                            pipeline.model_predict(full_prompt)
-                            for full_prompt in chunk_list
-                        ]
-                    )
-
-                    for question_response, response_context_index, chunk_index in zip(
-                        response_list, context_index_list, question_index_list
-                    ):
-                        current_df.loc[response_context_index, f"m_{chunk_index + 1}"] = (
-                            question_response
+                    if only_for_appending:
+                        pass
+                    else:
+                        response_list = await asyncio.gather(
+                            *[
+                                pipeline.model_predict(full_prompt)
+                                for full_prompt in chunk_list
+                            ]
                         )
+
+                        for question_response, response_context_index, chunk_index in zip(
+                            response_list, context_index_list, question_index_list
+                        ):
+                            current_df.loc[response_context_index, f"m_{chunk_index + 1}"] = (
+                                question_response
+                            )
 
                     chunk_list = []
                     context_index_list = []
@@ -118,12 +125,13 @@ async def get_experiment_result(
                 ]
             )
 
-            for question_response, chunk_index in zip(
-                response_list, question_index_list
+            for question_response, response_context_index, chunk_index in zip(
+                response_list, context_index_list, question_index_list
             ):
-                current_df.loc[context_index, f"m_{chunk_index + 1}"] = (
+                current_df.loc[response_context_index, f"m_{chunk_index + 1}"] = (
                     question_response
                 )
+
 
         current_df.to_csv(output_path.format(seed=seed))
 
@@ -132,12 +140,16 @@ def retrieve_score(all_seeds_result_dfs, *context_cols):
     score_df_list = []
 
     pattern = (
-        r"(?<answer_number\": )\d|(?<answer\\_number\": )\d|(?<answer_number\": \")\d"
-        r"(?<answer_number\":)\d|(?<answer\\_number\":)\d|(?<answer_number\":\")\d"
-        r"(?<answer\": )\d|(?<answer\": \")\d|(?<answer\":)\d|(?<answer\":\")\d"
+        r"(?<=answer_number[\"']: )\d|(?<=answer\\_number[\"']: )\d|(?<=answer_number[\"']: [\"'])\d"
+        r"(?<=answer_number[\"']:)\d|(?<=answer\\_number[\"']:)\d|(?<=answer_number[\"']:[\"'])\d"
+        r"(?<=answer[\"']: )\d|(?<=answer[\"']: [\"'])\d|(?<=answer[\"']:)\d|(?<=answer[\"']:[\"'])\d|"
+        r"(?<=answer_number: )\d|(?<=answer\\_number: )\d|(?<=answer_number: [\"'])\d"
+        r"(?<=answer_number:)\d|(?<=answer\\_number:)\d|(?<=answer_number:[\"'])\d"
+        r"(?<=answer: )\d|(?<=answer: [\"'])\d|(?<=answer:)\d|(?<=answer:[\"'])\d"
     )
+    print(pattern)
 
-    for seed_result_df in all_seeds_result_dfs:
+    for seed_index, seed_result_df in enumerate(all_seeds_result_dfs):
         seed_score_df = pd.DataFrame(columns=context_cols)
         for index, row in seed_result_df.iterrows():
             seed_score_df.loc[index, context_cols] = [
@@ -159,6 +171,8 @@ def retrieve_score(all_seeds_result_dfs, *context_cols):
                         seed_score_df.loc[index, question_col] = float(
                             json_result[list(json_result.keys())[0]]
                         )
+                except AttributeError:
+                    print(seed_index, index, question_col)
                 except Exception:
                     result = re.search(pattern, row[question_col])
                     if result:
