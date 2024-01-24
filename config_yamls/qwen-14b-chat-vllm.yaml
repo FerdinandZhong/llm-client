@@ -5,10 +5,10 @@ prompt_format:
   trailing_assistant: "<|im_start|>assistant\n"
 server_config:
   model_name: /root/model_assets/Qwen-14B-Chat
-  tensor_parallel_size: 4
+  tensor_parallel_size: 2
   max_model_len: 2048
   master_addr: 0.0.0.0
-  port: 8000
+  port: 8001
   gpu_memory_utilization: 0.95
 gen_parameters:
   max_tokens: 512

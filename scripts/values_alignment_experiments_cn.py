@@ -20,38 +20,28 @@ args = parser.parse_args()
 
 root_path = "/root/Projects/llm-client/notebooks/values_alignment"
 
-en_additional_prompt = "Response in JSON format: {\"answer_number\": 1, \"reason\": \"this is the reason\"}\n"
+cn_additional_prompt = "JSON格式示例为：{\"答案序号\": 1, \"原因\": \"中文回答的理由\"}\n"
 
-en_question_df = pd.read_csv(f"{root_path}/vsm2013_english_questions.csv")
-en_question_df = en_question_df.where(pd.notnull(en_question_df), None)
+cn_question_df = pd.read_csv(f"{root_path}/vsm2013_chinese_questions.csv")
+cn_question_df = cn_question_df.where(pd.notnull(cn_question_df), None)
 
 
 if __name__ == "__main__":
-    prompt_list = generate_question_prompts(question_df=en_question_df)
-    en_context_df = pd.read_csv(f"{root_path}/vsm_english_context.csv")
+    prompt_list = generate_question_prompts(question_df=cn_question_df)
+    print(prompt_list)
+    cn_context_df = pd.read_csv(f"{root_path}/vsm_chinese_context.csv")
 
     config_yaml = f"/root/Projects/llm-client/config_yamls/{args.config_yaml_name}.yaml"
     pipeline = Pipeline(config_yaml, verbose=1)
 
-    en_no_shuffle_output_path = root_path + f"/experiments_results/{args.output_model_path}/" + "english/no_shuffle/result_{seed}.csv"
-    en_shuffle_output_path = root_path + f"/experiments_results/{args.output_model_path}/" + "english/shuffle/result_{seed}.csv"
+    cn_output_path = root_path + f"/experiments_results/{args.output_model_path}/" + "chinese/result_{seed}.csv"
 
     asyncio.run(get_experiment_result(
         question_prompts = prompt_list,
-        experiment_context = en_context_df,
-        output_path = en_no_shuffle_output_path,
+        experiment_context = cn_context_df,
+        output_path = cn_output_path,
         pipeline = pipeline,
         chunk_size = args.chunk_size,
         use_random_options = False,
-        additional_prompt = en_additional_prompt,
-    ))
-
-    asyncio.run(get_experiment_result(
-        question_prompts = prompt_list,
-        experiment_context = en_context_df,
-        output_path = en_shuffle_output_path,
-        pipeline = pipeline,
-        chunk_size = args.chunk_size,
-        use_random_options = True,
-        additional_prompt = en_additional_prompt,
+        additional_prompt = cn_additional_prompt,
     ))
