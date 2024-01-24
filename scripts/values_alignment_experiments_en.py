@@ -14,10 +14,10 @@ parser.add_argument('--config_yaml_name', type=str, default="llama2-7b-chat-vllm
                 help='llama2 model config yaml name')
 
 parser.add_argument('--output_model_path', type=str, default="Llama2_7b")
-parser.add_argument('--output_shuffle_path', type=str, default="no_shuffle")
 parser.add_argument('--shuffle', action='store_true',
                    help='whether do shuffle')
 parser.add_argument('--chunk_size', type=int, default=50)
+parser.add_argument('--only_appending', action='store_true')
 
 args = parser.parse_args()
 
@@ -47,4 +47,5 @@ if __name__ == "__main__":
         chunk_size = args.chunk_size,
         use_random_options = args.shuffle,
         additional_prompt = en_additional_prompt,
+        only_for_appending = args.only_appending
     ))
