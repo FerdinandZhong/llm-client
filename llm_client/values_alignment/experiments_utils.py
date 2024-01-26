@@ -50,9 +50,11 @@ async def get_experiment_result(
     chunk_size: int = 50,
     use_random_options: bool = False,
     additional_prompt: str = "",
-    only_for_appending: bool = False
+    only_for_appending: bool = False,
+    customized_range: List[int] = None,
 ):
-    for seed in (seed_pbar := tqdm(range(10))):
+    loop_range = range(10) if customized_range is None else customized_range
+    for seed in (seed_pbar := tqdm(loop_range)):
         seed_pbar.set_description(f"seed: {seed}")
         if only_for_appending:
             current_df = pd.read_csv(output_path.format(seed=seed), index_col=0)
