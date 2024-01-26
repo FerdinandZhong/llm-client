@@ -137,17 +137,21 @@ async def get_experiment_result(
 
 
 def retrieve_score(all_seeds_result_dfs, *context_cols):
+    total_num_response = 0
+    not_matched_result = 0
     score_df_list = []
 
     pattern = (
-        r"(?<=answer_number[\"']: )\d|(?<=answer\\_number[\"']: )\d|(?<=answer_number[\"']: [\"'])\d"
-        r"(?<=answer_number[\"']:)\d|(?<=answer\\_number[\"']:)\d|(?<=answer_number[\"']:[\"'])\d"
+        r"(?<=[aA]nswer[_ ][nN]umber[\"']: )\d|(?<=answer\\_[nN]umber[\"']: )\d|(?<=[aA]nswer[_ ][nN]umber[\"']: [\"'])\d|"
+        r"(?<=[aA]nswer[_ ][nN]umber[\"']:)\d|(?<=answer\\_[nN]umber[\"']:)\d|(?<=[aA]nswer[_ ][nN]umber[\"']:[\"'])\d|"
         r"(?<=answer[\"']: )\d|(?<=answer[\"']: [\"'])\d|(?<=answer[\"']:)\d|(?<=answer[\"']:[\"'])\d|"
-        r"(?<=answer_number: )\d|(?<=answer\\_number: )\d|(?<=answer_number: [\"'])\d"
-        r"(?<=answer_number:)\d|(?<=answer\\_number:)\d|(?<=answer_number:[\"'])\d"
-        r"(?<=answer: )\d|(?<=answer: [\"'])\d|(?<=answer:)\d|(?<=answer:[\"'])\d"
+        r"(?<=[aA]nswer[_ ][nN]umber: )\d|(?<=answer\\_[nN]umber: )\d|(?<=[aA]nswer[_ ][nN]umber: [\"'])\d|"
+        r"(?<=[aA]nswer[_ ][nN]umber:)\d|(?<=answer\\_[nN]umber:)\d|(?<=[aA]nswer[_ ][nN]umber:[\"'])\d|"
+        r"(?<=answer: )\d|(?<=answer: [\"'])\d|(?<=answer:)\d|(?<=answer:[\"'])\d|"
+        r"(?<=答案序号[\"']: )\d|(?<=答案序号[\"']: [\"'])\d|"
+        r"(?<=答案序号[\"']:)\d|(?<=答案序号[\"']:[\"'])\d"
     )
-    print(pattern)
+    
 
     for seed_index, seed_result_df in enumerate(all_seeds_result_dfs):
         seed_score_df = pd.DataFrame(columns=context_cols)
@@ -156,34 +160,26 @@ def retrieve_score(all_seeds_result_dfs, *context_cols):
                 row[context_col] for context_col in context_cols
             ]
             for question_index in range(1, 25):
+                total_num_response += 1
                 question_col = f"m_{question_index}"
                 try:
                     json_result = json.loads(row[question_col].lstrip().rstrip())
                     seed_score_df.loc[index, question_col] = float(
-                        json_result["answer_number"]
+                        json_result[list(json_result.keys())[0]]
                     )
-                except KeyError:
-                    try:
-                        seed_score_df.loc[index, question_col] = float(
-                            json_result["answer"]
-                        )
-                    except KeyError:
-                        seed_score_df.loc[index, question_col] = float(
-                            json_result[list(json_result.keys())[0]]
-                        )
-                except AttributeError:
-                    print(seed_index, index, question_col)
-                except Exception:
+                except (json.JSONDecodeError, TypeError, AttributeError, ValueError):
                     result = re.search(pattern, row[question_col])
                     if result:
                         seed_score_df.loc[index, question_col] = float(result.group())
                     else:
                         print(f"No match found. {row[question_col]}")
+                        not_matched_result += 1
                         seed_score_df.loc[index, question_col] = 3
 
         score_df_list.append(seed_score_df)
 
     print(score_df_list[0].head())
+    print(f"total number of not matched: {not_matched_result}, percentage: {not_matched_result/total_num_response}")
     return score_df_list
 
 
@@ -284,18 +280,30 @@ def get_vsm_score_df(
 
 
 def get_original_score_pearson_values(source_df, target_cols, merge_by):
+    """
+    Compute Pearson correlation values between different columns of a DataFrame.
+
+    Parameters:
+    source_df (pd.DataFrame): The source DataFrame.
+    target_cols (List[str]): The target columns for which to compute correlations.
+    merge_by (str): The column to group by before computing correlations.
+
+    Returns:
+    tuple: A tuple containing a DataFrame of Pearson correlation values, the mean correlation score, and the mean p-value.
+    """
+    # rest of the function here
     grouped_avg_df = source_df.groupby(merge_by)[target_cols].agg(["mean"])
 
     grouped_avg_df.columns = grouped_avg_df.columns.get_level_values(0)
     grouped_avg_df.reset_index(inplace=True)
 
     transposed_grouped_avg_df = grouped_avg_df.T
-    score_corr_matrix = transposed_grouped_avg_df.corr(method="pearson")
-    upper = score_corr_matrix.where(np.triu(np.ones(score_corr_matrix.shape), k=1).astype(bool))
+    transposed_grouped_avg_df.columns = transposed_grouped_avg_df.iloc[0]
+    transposed_grouped_avg_df = transposed_grouped_avg_df[1:]
 
     p_values = []
-    for col1 in upper.columns:
-        for col2 in upper.columns:
+    for col1 in transposed_grouped_avg_df.columns:
+        for col2 in transposed_grouped_avg_df.columns:
             if col1 == col2:
                 continue
             corr_score, p_val = stats.pearsonr(transposed_grouped_avg_df[col1], transposed_grouped_avg_df[col2])
@@ -321,39 +329,43 @@ def get_standard_varaince_over_df(source_df, target_cols, merge_by):
     dict: A dictionary mapping each target column to its standard deviation.
     """
     grouped_avg_df = source_df.groupby(merge_by)[target_cols].agg(["mean"])
+    grouped_avg_df.columns = grouped_avg_df.columns.get_level_values(0)
 
     std_mappings = {}
     for col in target_cols:
-        std_mappings[col] = grouped_avg_df[col].std()
+        std_mappings[col] = float(grouped_avg_df[col].std())
 
     return std_mappings
 
-
 def compute_distances_two_dfs(source_df_1, source_df_2, target_cols, merge_by):
     grouped_avg_df_1 = source_df_1.groupby(merge_by)[target_cols].agg(["mean"])
+    grouped_avg_df_1.columns = grouped_avg_df_1.columns.get_level_values(0)
+    grouped_avg_df_1.reset_index(inplace=True)
     grouped_avg_df_2 = source_df_2.groupby(merge_by)[target_cols].agg(["mean"])
-    correlation_df = source_df_1.loc[:, [merge_by]].copy()
+    grouped_avg_df_2.columns = grouped_avg_df_2.columns.get_level_values(0)
+    correlation_df = pd.DataFrame(index=grouped_avg_df_1.index)
 
     for row_index in range(grouped_avg_df_1.shape[0]):
-        series_1 = grouped_avg_df_1.loc[row_index][target_cols].to_numpy()
-        series_2 = grouped_avg_df_2.loc[row_index][target_cols].to_numpy()
+        series_1 = grouped_avg_df_1.iloc[row_index][target_cols].to_numpy()
+        series_2 = grouped_avg_df_2.iloc[row_index][target_cols].to_numpy()
 
         corr_score, p_value = stats.pearsonr(series_1, series_2)
 
-        correlation_df.loc["row_index", "corr_score"] = corr_score
-        correlation_df.loc["row_index", "p_value"] = p_value
-    
+        correlation_df.loc[row_index, "corr_score"] = corr_score
+        correlation_df.loc[row_index, "p_value"] = p_value
     return correlation_df
 
 def compute_vsm_values_gap(source_df_1, source_df_2, target_cols, merge_by):
     grouped_avg_df_1 = source_df_1.groupby(merge_by)[target_cols].agg(["mean"])
+    grouped_avg_df_1.columns = grouped_avg_df_1.columns.get_level_values(0)
     grouped_avg_df_2 = source_df_2.groupby(merge_by)[target_cols].agg(["mean"])
-    distance_df = source_df_1.loc[:, [merge_by]].copy()
+    grouped_avg_df_2.columns = grouped_avg_df_2.columns.get_level_values(0)
+    distance_df = pd.DataFrame(columns=target_cols)
 
     for row_index in range(grouped_avg_df_1.shape[0]):
         for target_col in target_cols:
-            value_1 = grouped_avg_df_1.loc[row_index, target_col]
-            value_2 = grouped_avg_df_2.loc[row_index, target_col]
+            value_1 = grouped_avg_df_1.iloc[row_index][target_col]
+            value_2 = grouped_avg_df_2.iloc[row_index][target_col]
             distance_df.loc[row_index, target_col] = math.sqrt(math.pow((value_1 - value_2), 2))
 
     overall_distance = distance_df[target_cols].mean()
