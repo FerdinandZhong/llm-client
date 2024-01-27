@@ -139,53 +139,49 @@ async def get_experiment_result(
 
 
 def retrieve_score(all_seeds_result_dfs, *context_cols):
+    total_num_response = 0
+    not_matched_result = 0
     score_df_list = []
 
     pattern = (
-        r"(?<=answer_number[\"']: )\d|(?<=answer\\_number[\"']: )\d|(?<=answer_number[\"']: [\"'])\d"
-        r"(?<=answer_number[\"']:)\d|(?<=answer\\_number[\"']:)\d|(?<=answer_number[\"']:[\"'])\d"
-        r"(?<=answer[\"']: )\d|(?<=answer[\"']: [\"'])\d|(?<=answer[\"']:)\d|(?<=answer[\"']:[\"'])\d|"
-        r"(?<=answer_number: )\d|(?<=answer\\_number: )\d|(?<=answer_number: [\"'])\d"
-        r"(?<=answer_number:)\d|(?<=answer\\_number:)\d|(?<=answer_number:[\"'])\d"
-        r"(?<=answer: )\d|(?<=answer: [\"'])\d|(?<=answer:)\d|(?<=answer:[\"'])\d"
+        r"(?<=[aA]nswer[_ ][nN]umber[\"']: )\d|(?<=answer\\_[nN]umber[\"']: )\d|(?<=[aA]nswer[_ ][nN]umber[\"']: [\"'])\d|"
+        r"(?<=[aA]nswer[_ ][nN]umber[\"']:)\d|(?<=answer\\_[nN]umber[\"']:)\d|(?<=[aA]nswer[_ ][nN]umber[\"']:[\"'])\d|"
+        r"(?<=[aA]nswer[\"']: )\d|(?<=[aA]nswer[\"']: [\"'])\d|(?<=[aA]nswer[\"']:)\d|(?<=[aA]nswer[\"']:[\"'])\d|"
+        r"(?<=[aA]nswer[_ ][nN]umber: )\d|(?<=answer\\_[nN]umber: )\d|(?<=[aA]nswer[_ ][nN]umber: [\"'])\d|"
+        r"(?<=[aA]nswer[_ ][nN]umber:)\d|(?<=answer\\_[nN]umber:)\d|(?<=[aA]nswer[_ ][nN]umber:[\"'])\d|"
+        r"(?<=[aA]nswer: )\d|(?<=[aA]nswer: [\"'])\d|(?<=[aA]nswer:)\d|(?<=[aA]nswer:[\"'])\d|"
+        r"(?<=答案序号[\"']: )\d|(?<=答案序号[\"']: [\"'])\d|"
+        r"(?<=答案序号[\"']:)\d|(?<=答案序号[\"']:[\"'])\d"
     )
-    print(pattern)
+    
 
-    for seed_index, seed_result_df in enumerate(all_seeds_result_dfs):
+    for _, seed_result_df in enumerate(all_seeds_result_dfs):
         seed_score_df = pd.DataFrame(columns=context_cols)
         for index, row in seed_result_df.iterrows():
             seed_score_df.loc[index, context_cols] = [
                 row[context_col] for context_col in context_cols
             ]
             for question_index in range(1, 25):
+                total_num_response += 1
                 question_col = f"m_{question_index}"
                 try:
                     json_result = json.loads(row[question_col].lstrip().rstrip())
                     seed_score_df.loc[index, question_col] = float(
-                        json_result["answer_number"]
+                        json_result[list(json_result.keys())[0]]
                     )
-                except KeyError:
-                    try:
-                        seed_score_df.loc[index, question_col] = float(
-                            json_result["answer"]
-                        )
-                    except KeyError:
-                        seed_score_df.loc[index, question_col] = float(
-                            json_result[list(json_result.keys())[0]]
-                        )
-                except AttributeError:
-                    print(seed_index, index, question_col)
-                except Exception:
+                except (json.JSONDecodeError, TypeError, AttributeError, ValueError, IndexError):
                     result = re.search(pattern, row[question_col])
                     if result:
                         seed_score_df.loc[index, question_col] = float(result.group())
                     else:
                         print(f"No match found. {row[question_col]}")
+                        not_matched_result += 1
                         seed_score_df.loc[index, question_col] = 3
 
         score_df_list.append(seed_score_df)
 
     print(score_df_list[0].head())
+    print(f"total number of not matched: {not_matched_result}, percentage: {not_matched_result/total_num_response}")
     return score_df_list
 
 
