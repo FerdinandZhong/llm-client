@@ -146,16 +146,16 @@ def retrieve_score(all_seeds_result_dfs, *context_cols):
     pattern = (
         r"(?<=[aA]nswer[_ ][nN]umber[\"']: )\d|(?<=answer\\_[nN]umber[\"']: )\d|(?<=[aA]nswer[_ ][nN]umber[\"']: [\"'])\d|"
         r"(?<=[aA]nswer[_ ][nN]umber[\"']:)\d|(?<=answer\\_[nN]umber[\"']:)\d|(?<=[aA]nswer[_ ][nN]umber[\"']:[\"'])\d|"
-        r"(?<=answer[\"']: )\d|(?<=answer[\"']: [\"'])\d|(?<=answer[\"']:)\d|(?<=answer[\"']:[\"'])\d|"
+        r"(?<=[aA]nswer[\"']: )\d|(?<=[aA]nswer[\"']: [\"'])\d|(?<=[aA]nswer[\"']:)\d|(?<=[aA]nswer[\"']:[\"'])\d|"
         r"(?<=[aA]nswer[_ ][nN]umber: )\d|(?<=answer\\_[nN]umber: )\d|(?<=[aA]nswer[_ ][nN]umber: [\"'])\d|"
         r"(?<=[aA]nswer[_ ][nN]umber:)\d|(?<=answer\\_[nN]umber:)\d|(?<=[aA]nswer[_ ][nN]umber:[\"'])\d|"
-        r"(?<=answer: )\d|(?<=answer: [\"'])\d|(?<=answer:)\d|(?<=answer:[\"'])\d|"
+        r"(?<=[aA]nswer: )\d|(?<=[aA]nswer: [\"'])\d|(?<=[aA]nswer:)\d|(?<=[aA]nswer:[\"'])\d|"
         r"(?<=答案序号[\"']: )\d|(?<=答案序号[\"']: [\"'])\d|"
         r"(?<=答案序号[\"']:)\d|(?<=答案序号[\"']:[\"'])\d"
     )
     
 
-    for seed_index, seed_result_df in enumerate(all_seeds_result_dfs):
+    for _, seed_result_df in enumerate(all_seeds_result_dfs):
         seed_score_df = pd.DataFrame(columns=context_cols)
         for index, row in seed_result_df.iterrows():
             seed_score_df.loc[index, context_cols] = [
@@ -169,7 +169,7 @@ def retrieve_score(all_seeds_result_dfs, *context_cols):
                     seed_score_df.loc[index, question_col] = float(
                         json_result[list(json_result.keys())[0]]
                     )
-                except (json.JSONDecodeError, TypeError, AttributeError, ValueError):
+                except (json.JSONDecodeError, TypeError, AttributeError, ValueError, IndexError):
                     result = re.search(pattern, row[question_col])
                     if result:
                         seed_score_df.loc[index, question_col] = float(result.group())
