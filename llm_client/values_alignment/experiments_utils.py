@@ -5,6 +5,7 @@ import json
 from typing import List, Tuple
 
 import pandas as pd
+import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 from ..pipeline import Pipeline
@@ -155,7 +156,7 @@ def retrieve_score(all_seeds_result_dfs, *context_cols):
     )
     
 
-    for _, seed_result_df in enumerate(all_seeds_result_dfs):
+    for seed, seed_result_df in enumerate(all_seeds_result_dfs):
         seed_score_df = pd.DataFrame(columns=context_cols)
         for index, row in seed_result_df.iterrows():
             seed_score_df.loc[index, context_cols] = [
@@ -165,17 +166,22 @@ def retrieve_score(all_seeds_result_dfs, *context_cols):
                 total_num_response += 1
                 question_col = f"m_{question_index}"
                 try:
-                    json_result = json.loads(row[question_col].lstrip().rstrip())
+                    json_result = json.loads(str(row[question_col]).lstrip().rstrip())
                     seed_score_df.loc[index, question_col] = float(
                         json_result[list(json_result.keys())[0]]
                     )
+                
                 except (json.JSONDecodeError, TypeError, AttributeError, ValueError, IndexError):
-                    result = re.search(pattern, row[question_col])
-                    if result:
-                        seed_score_df.loc[index, question_col] = float(result.group())
-                    else:
-                        print(f"No match found. {row[question_col]}")
-                        not_matched_result += 1
+                    try:
+                        result = re.search(pattern, row[question_col])
+                        if result:
+                            seed_score_df.loc[index, question_col] = float(result.group())
+                        else:
+                            print(f"No match found. {row[question_col]}")
+                            not_matched_result += 1
+                            seed_score_df.loc[index, question_col] = 3
+                    except TypeError:
+                        print(f"type error: {seed}, {index}, {question_index}, {row[question_col]}")
                         seed_score_df.loc[index, question_col] = 3
 
         score_df_list.append(seed_score_df)
@@ -210,7 +216,7 @@ def get_avg_score_df(score_df_list):
 
 
 def get_vsm_score_df(
-    score_df_list, const: int = 0, keep_m15: bool = True, keep_m18: bool = True
+    score_df_list, const: int = 0, keep_m15: bool = False, keep_m18: bool = False
 ):
     """
     Calculate the VSM score dataframe from a list of score dataframes.
@@ -357,7 +363,20 @@ def compute_distances_two_dfs(source_df_1, source_df_2, target_cols, merge_by):
         correlation_df.loc[row_index, "p_value"] = p_value
     return correlation_df
 
+    
 def compute_vsm_values_gap(source_df_1, source_df_2, target_cols, merge_by):
+    """
+    Compute the gap between VSM values of two dataframes.
+
+    Parameters:
+    source_df_1 (pd.DataFrame): The first source dataframe.
+    source_df_2 (pd.DataFrame): The second source dataframe.
+    target_cols (List[str]): The target columns.
+    merge_by (str): The column to merge by.
+
+    Returns:
+    pd.DataFrame: A dataframe containing the gap between VSM values.
+    """
     grouped_avg_df_1 = source_df_1.groupby(merge_by)[target_cols].agg(["mean"])
     grouped_avg_df_1.columns = grouped_avg_df_1.columns.get_level_values(0)
     grouped_avg_df_2 = source_df_2.groupby(merge_by)[target_cols].agg(["mean"])
@@ -375,3 +394,49 @@ def compute_vsm_values_gap(source_df_1, source_df_2, target_cols, merge_by):
     return distance_df, overall_distance
 
 
+def compute_vsm_values_center_gap(source_df_1, source_df_2, target_cols):
+    
+    grouped_avg_df_1 = source_df_1[target_cols].mean()
+    grouped_avg_df_2 = source_df_2[target_cols].mean()
+    print(f"df1 centroid: \n{grouped_avg_df_1}")
+    print(f"df2 centroid: \n{grouped_avg_df_2}")
+    distance_mapping = {}
+
+    for target_col in target_cols:
+        value_1 = grouped_avg_df_1[target_col]
+        value_2 = grouped_avg_df_2[target_col]
+        distance_mapping[target_col] = math.sqrt(math.pow((value_1 - value_2), 2))
+
+    return distance_mapping
+
+def visualize_vsm_differences(
+    df_1: pd.DataFrame, 
+    df_2: pd.DataFrame, 
+    merge_by: str,
+    target_cols: List[str],
+    label_1: str,
+    label_2: str,
+    savepath: str, 
+    figsize:Tuple =(15,10)
+):
+    grouped_avg_df_1 = df_1.groupby(merge_by)[target_cols].agg(["mean"])
+    grouped_avg_df_1.columns = grouped_avg_df_1.columns.get_level_values(0)
+    grouped_avg_df_2 = df_2.groupby(merge_by)[target_cols].agg(["mean"])
+    grouped_avg_df_2.columns = grouped_avg_df_2.columns.get_level_values(0)
+    grouped_avg_df_1.reset_index(inplace=True)
+    grouped_avg_df_2.reset_index(inplace=True)
+
+    _, axes = plt.subplots(1, len(target_cols), figsize=figsize)
+    for i, column in enumerate(target_cols):
+        for x, (y_1, y_2) in enumerate(zip(grouped_avg_df_1[column], grouped_avg_df_2[column])):
+            axes[i].scatter(x, y_1, color="green", label=label_1)
+            axes[i].text(x=x, y=y_1, s=grouped_avg_df_1.iloc[x][merge_by], ha="center")
+            axes[i].scatter(x, y_2, color="red", label=label_2)
+            axes[i].text(x=x, y=y_2, s=grouped_avg_df_1.iloc[x][merge_by], ha="center") # use same name
+            axes[i].set_ylim([-100, 100])
+
+        axes[i].set_title(column)
+    plt.tight_layout()
+
+    plt.savefig(savepath)
+    plt.show()
