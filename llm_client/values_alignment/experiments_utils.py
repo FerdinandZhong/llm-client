@@ -5,6 +5,7 @@ import json
 from typing import List, Tuple
 
 import pandas as pd
+import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 from ..pipeline import Pipeline
@@ -155,7 +156,7 @@ def retrieve_score(all_seeds_result_dfs, *context_cols):
     )
     
 
-    for _, seed_result_df in enumerate(all_seeds_result_dfs):
+    for seed, seed_result_df in enumerate(all_seeds_result_dfs):
         seed_score_df = pd.DataFrame(columns=context_cols)
         for index, row in seed_result_df.iterrows():
             seed_score_df.loc[index, context_cols] = [
@@ -165,17 +166,22 @@ def retrieve_score(all_seeds_result_dfs, *context_cols):
                 total_num_response += 1
                 question_col = f"m_{question_index}"
                 try:
-                    json_result = json.loads(row[question_col].lstrip().rstrip())
+                    json_result = json.loads(str(row[question_col]).lstrip().rstrip())
                     seed_score_df.loc[index, question_col] = float(
                         json_result[list(json_result.keys())[0]]
                     )
+                
                 except (json.JSONDecodeError, TypeError, AttributeError, ValueError, IndexError):
-                    result = re.search(pattern, row[question_col])
-                    if result:
-                        seed_score_df.loc[index, question_col] = float(result.group())
-                    else:
-                        print(f"No match found. {row[question_col]}")
-                        not_matched_result += 1
+                    try:
+                        result = re.search(pattern, row[question_col])
+                        if result:
+                            seed_score_df.loc[index, question_col] = float(result.group())
+                        else:
+                            print(f"No match found. {row[question_col]}")
+                            not_matched_result += 1
+                            seed_score_df.loc[index, question_col] = 3
+                    except TypeError:
+                        print(f"type error: {seed}, {index}, {question_index}, {row[question_col]}")
                         seed_score_df.loc[index, question_col] = 3
 
         score_df_list.append(seed_score_df)
@@ -210,7 +216,7 @@ def get_avg_score_df(score_df_list):
 
 
 def get_vsm_score_df(
-    score_df_list, const: int = 0, keep_m15: bool = True, keep_m18: bool = True
+    score_df_list, const: int = 0, keep_m15: bool = False, keep_m18: bool = False
 ):
     """
     Calculate the VSM score dataframe from a list of score dataframes.
@@ -282,18 +288,30 @@ def get_vsm_score_df(
 
 
 def get_original_score_pearson_values(source_df, target_cols, merge_by):
+    """
+    Compute Pearson correlation values between different columns of a DataFrame.
+
+    Parameters:
+    source_df (pd.DataFrame): The source DataFrame.
+    target_cols (List[str]): The target columns for which to compute correlations.
+    merge_by (str): The column to group by before computing correlations.
+
+    Returns:
+    tuple: A tuple containing a DataFrame of Pearson correlation values, the mean correlation score, and the mean p-value.
+    """
+    # rest of the function here
     grouped_avg_df = source_df.groupby(merge_by)[target_cols].agg(["mean"])
 
     grouped_avg_df.columns = grouped_avg_df.columns.get_level_values(0)
     grouped_avg_df.reset_index(inplace=True)
 
     transposed_grouped_avg_df = grouped_avg_df.T
-    score_corr_matrix = transposed_grouped_avg_df.corr(method="pearson")
-    upper = score_corr_matrix.where(np.triu(np.ones(score_corr_matrix.shape), k=1).astype(bool))
+    transposed_grouped_avg_df.columns = transposed_grouped_avg_df.iloc[0]
+    transposed_grouped_avg_df = transposed_grouped_avg_df[1:]
 
     p_values = []
-    for col1 in upper.columns:
-        for col2 in upper.columns:
+    for col1 in transposed_grouped_avg_df.columns:
+        for col2 in transposed_grouped_avg_df.columns:
             if col1 == col2:
                 continue
             corr_score, p_val = stats.pearsonr(transposed_grouped_avg_df[col1], transposed_grouped_avg_df[col2])
@@ -319,39 +337,56 @@ def get_standard_varaince_over_df(source_df, target_cols, merge_by):
     dict: A dictionary mapping each target column to its standard deviation.
     """
     grouped_avg_df = source_df.groupby(merge_by)[target_cols].agg(["mean"])
+    grouped_avg_df.columns = grouped_avg_df.columns.get_level_values(0)
 
     std_mappings = {}
     for col in target_cols:
-        std_mappings[col] = grouped_avg_df[col].std()
+        std_mappings[col] = float(grouped_avg_df[col].std())
 
     return std_mappings
 
-
 def compute_distances_two_dfs(source_df_1, source_df_2, target_cols, merge_by):
     grouped_avg_df_1 = source_df_1.groupby(merge_by)[target_cols].agg(["mean"])
+    grouped_avg_df_1.columns = grouped_avg_df_1.columns.get_level_values(0)
+    grouped_avg_df_1.reset_index(inplace=True)
     grouped_avg_df_2 = source_df_2.groupby(merge_by)[target_cols].agg(["mean"])
-    correlation_df = source_df_1.loc[:, [merge_by]].copy()
+    grouped_avg_df_2.columns = grouped_avg_df_2.columns.get_level_values(0)
+    correlation_df = pd.DataFrame(index=grouped_avg_df_1.index)
 
     for row_index in range(grouped_avg_df_1.shape[0]):
-        series_1 = grouped_avg_df_1.loc[row_index][target_cols].to_numpy()
-        series_2 = grouped_avg_df_2.loc[row_index][target_cols].to_numpy()
+        series_1 = grouped_avg_df_1.iloc[row_index][target_cols].to_numpy()
+        series_2 = grouped_avg_df_2.iloc[row_index][target_cols].to_numpy()
 
         corr_score, p_value = stats.pearsonr(series_1, series_2)
 
-        correlation_df.loc["row_index", "corr_score"] = corr_score
-        correlation_df.loc["row_index", "p_value"] = p_value
-    
+        correlation_df.loc[row_index, "corr_score"] = corr_score
+        correlation_df.loc[row_index, "p_value"] = p_value
     return correlation_df
 
+    
 def compute_vsm_values_gap(source_df_1, source_df_2, target_cols, merge_by):
+    """
+    Compute the gap between VSM values of two dataframes.
+
+    Parameters:
+    source_df_1 (pd.DataFrame): The first source dataframe.
+    source_df_2 (pd.DataFrame): The second source dataframe.
+    target_cols (List[str]): The target columns.
+    merge_by (str): The column to merge by.
+
+    Returns:
+    pd.DataFrame: A dataframe containing the gap between VSM values.
+    """
     grouped_avg_df_1 = source_df_1.groupby(merge_by)[target_cols].agg(["mean"])
+    grouped_avg_df_1.columns = grouped_avg_df_1.columns.get_level_values(0)
     grouped_avg_df_2 = source_df_2.groupby(merge_by)[target_cols].agg(["mean"])
-    distance_df = source_df_1.loc[:, [merge_by]].copy()
+    grouped_avg_df_2.columns = grouped_avg_df_2.columns.get_level_values(0)
+    distance_df = pd.DataFrame(columns=target_cols)
 
     for row_index in range(grouped_avg_df_1.shape[0]):
         for target_col in target_cols:
-            value_1 = grouped_avg_df_1.loc[row_index, target_col]
-            value_2 = grouped_avg_df_2.loc[row_index, target_col]
+            value_1 = grouped_avg_df_1.iloc[row_index][target_col]
+            value_2 = grouped_avg_df_2.iloc[row_index][target_col]
             distance_df.loc[row_index, target_col] = math.sqrt(math.pow((value_1 - value_2), 2))
 
     overall_distance = distance_df[target_cols].mean()
@@ -359,3 +394,49 @@ def compute_vsm_values_gap(source_df_1, source_df_2, target_cols, merge_by):
     return distance_df, overall_distance
 
 
+def compute_vsm_values_center_gap(source_df_1, source_df_2, target_cols):
+    
+    grouped_avg_df_1 = source_df_1[target_cols].mean()
+    grouped_avg_df_2 = source_df_2[target_cols].mean()
+    print(f"df1 centroid: \n{grouped_avg_df_1}")
+    print(f"df2 centroid: \n{grouped_avg_df_2}")
+    distance_mapping = {}
+
+    for target_col in target_cols:
+        value_1 = grouped_avg_df_1[target_col]
+        value_2 = grouped_avg_df_2[target_col]
+        distance_mapping[target_col] = math.sqrt(math.pow((value_1 - value_2), 2))
+
+    return distance_mapping
+
+def visualize_vsm_differences(
+    df_1: pd.DataFrame, 
+    df_2: pd.DataFrame, 
+    merge_by: str,
+    target_cols: List[str],
+    label_1: str,
+    label_2: str,
+    savepath: str, 
+    figsize:Tuple =(15,10)
+):
+    grouped_avg_df_1 = df_1.groupby(merge_by)[target_cols].agg(["mean"])
+    grouped_avg_df_1.columns = grouped_avg_df_1.columns.get_level_values(0)
+    grouped_avg_df_2 = df_2.groupby(merge_by)[target_cols].agg(["mean"])
+    grouped_avg_df_2.columns = grouped_avg_df_2.columns.get_level_values(0)
+    grouped_avg_df_1.reset_index(inplace=True)
+    grouped_avg_df_2.reset_index(inplace=True)
+
+    _, axes = plt.subplots(1, len(target_cols), figsize=figsize)
+    for i, column in enumerate(target_cols):
+        for x, (y_1, y_2) in enumerate(zip(grouped_avg_df_1[column], grouped_avg_df_2[column])):
+            axes[i].scatter(x, y_1, color="green", label=label_1)
+            axes[i].text(x=x, y=y_1, s=grouped_avg_df_1.iloc[x][merge_by], ha="center")
+            axes[i].scatter(x, y_2, color="red", label=label_2)
+            axes[i].text(x=x, y=y_2, s=grouped_avg_df_1.iloc[x][merge_by], ha="center") # use same name
+            axes[i].set_ylim([-100, 100])
+
+        axes[i].set_title(column)
+    plt.tight_layout()
+
+    plt.savefig(savepath)
+    plt.show()
