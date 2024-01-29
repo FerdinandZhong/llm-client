@@ -47,5 +47,6 @@ if __name__ == "__main__":
         chunk_size = args.chunk_size,
         use_random_options = args.shuffle,
         additional_prompt = en_additional_prompt,
-        only_for_appending = args.only_appending
+        only_for_appending = args.only_appending,
+        customized_range=range(2,10)
     ))
